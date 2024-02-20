@@ -3,8 +3,8 @@
 # $ torchrun --standalone --nproc_per_node=8 train.py config/train_gpt2.py
 
 wandb_log = True
-wandb_project = 'owt'
-wandb_run_name='gpt2-124M'
+# wandb_project = 'owt'
+# wandb_run_name='gpt2-124M'
 
 # these make the total batch size be ~0.5M
 # 12 batch size * 1024 block size * 5 gradaccum * 8 GPUs = 491,520
@@ -21,5 +21,12 @@ eval_interval = 1000
 eval_iters = 200
 log_interval = 10
 
-# weight decay
+# optimizer
+optimizer_name = 'adamw'
+learning_rate = 6e-4
 weight_decay = 1e-1
+beta1 = 0.9
+beta2 = 0.95
+
+# device
+device = 'cuda:0'
