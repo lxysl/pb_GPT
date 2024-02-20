@@ -30,4 +30,4 @@ beta2 = 0.95
 gamma = 0.9
 
 # device
-device = 'cuda:0'
+device = 'cuda:1'

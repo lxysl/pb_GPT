@@ -285,7 +285,12 @@ class GPT(nn.Module):
         print(f"num decayed parameter tensors: {len(decay_params)}, with {num_decay_params:,} parameters")
         print(f"num non-decayed parameter tensors: {len(nodecay_params)}, with {num_nodecay_params:,} parameters")
         # Create AdamW optimizer and use the fused version if it is available
-        fused_available = 'fused' in inspect.signature(torch.optim.AdamW).parameters
+        if optimizer_name in ['adam', 'Adam']:
+            fused_available = 'fused' in inspect.signature(torch.optim.Adam).parameters
+        elif optimizer_name in ['adamw', 'AdamW']:
+            fused_available = 'fused' in inspect.signature(torch.optim.AdamW).parameters
+        else:
+            fused_available = False
         use_fused = fused_available and 'cuda' in device_type
         extra_args = dict(fused=True) if use_fused else dict()
         if optimizer_name in ['adam', 'Adam']:
@@ -300,6 +305,8 @@ class GPT(nn.Module):
             optimizer = Lion(optim_groups, lr=learning_rate, betas=betas, **extra_args)
         elif optimizer_name in ['pblion', 'pbLION']:
             optimizer = pbLion(optim_groups, lr=learning_rate, betas=betas, gamma=gamma, **extra_args)
+        else:
+            raise ValueError(f"unrecognized optimizer: {optimizer_name}")
         print(f"using fused AdamW: {use_fused}")
 
         return optimizer
